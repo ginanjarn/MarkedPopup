@@ -25,4 +25,4 @@ def convert_markdown(text: str) -> str:
 
 def convert_rst(text: str) -> str:
     """rst renderer"""
-    return docutils_core.publish_string(text).decode()
+    return docutils_core.publish_parts(text, writer_name="html")["html_body"]
