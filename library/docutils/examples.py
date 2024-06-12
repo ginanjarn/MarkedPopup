@@ -1,4 +1,4 @@
-# $Id$
+# $Id: examples.py 9026 2022-03-04 15:57:13Z milde $
 # Author: David Goodger <goodger@python.org>
 # Copyright: This module has been placed in the public domain.
 

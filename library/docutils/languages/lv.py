@@ -1,4 +1,4 @@
-# $Id$
+# $Id: lv.py 9030 2022-03-05 23:28:32Z milde $
 # Copyright: This module has been placed in the public domain.
 
 # New language mappings are welcome.  Before doing a new translation, please

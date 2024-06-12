@@ -1,4 +1,4 @@
-# $Id$
+# $Id: __init__.py 9376 2023-05-09 18:31:42Z grubert $
 # Author: David Goodger <goodger@python.org>
 # Copyright: This module has been placed in the public domain.
 
@@ -54,7 +54,7 @@ from collections import namedtuple
 
 __docformat__ = 'reStructuredText'
 
-__version__ = '0.22b.dev'
+__version__ = '0.20.1'
 """Docutils version identifier (complies with PEP 440)::
 
     major.minor[.micro][releaselevel[serial]][.dev]
@@ -116,11 +116,11 @@ class VersionInfo(namedtuple('VersionInfo',
 
 __version_info__ = VersionInfo(
     major=0,
-    minor=22,
-    micro=0,
-    releaselevel='beta',  # one of 'alpha', 'beta', 'candidate', 'final'
+    minor=20,
+    micro=1,
+    releaselevel='final',  # one of 'alpha', 'beta', 'candidate', 'final'
     serial=0,  # pre-release number (0 for final releases and snapshots)
-    release=False  # True for official releases and pre-releases
+    release=True  # True for official releases and pre-releases
     )
 """Comprehensive version information tuple.
 

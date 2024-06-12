@@ -1,4 +1,4 @@
-# $Id$
+# $Id: references.py 9312 2022-12-19 20:43:08Z milde $
 # Author: David Goodger <goodger@python.org>
 # Copyright: This module has been placed in the public domain.
 
@@ -25,7 +25,7 @@ class PropagateTargets(Transform):
         <paragraph>
             This is a test.
 
-    `PropagateTargets` propagates the ids and names of the internal
+    PropagateTargets propagates the ids and names of the internal
     targets preceding the paragraph to the paragraph itself::
 
         <target refid="internal1">
@@ -135,13 +135,11 @@ class AnonymousHyperlinks(Transform):
                 ref.replace_self(prb)
             return
         for ref, target in zip(anonymous_refs, anonymous_targets):
-            if ref.hasattr('refid') or ref.hasattr('refuri'):
-                continue
-            target.referenced = True
+            target.referenced = 1
             while True:
                 if target.hasattr('refuri'):
                     ref['refuri'] = target['refuri']
-                    ref.resolved = True
+                    ref.resolved = 1
                     break
                 else:
                     if not target['ids']:

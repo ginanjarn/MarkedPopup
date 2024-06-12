@@ -1,4 +1,4 @@
-# $Id$
+# $Id: ru.py 9030 2022-03-05 23:28:32Z milde $
 # Author: Roman Suzi <rnd@onego.ru>
 # Copyright: This module has been placed in the public domain.
 

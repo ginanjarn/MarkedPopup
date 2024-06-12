@@ -1,4 +1,4 @@
-# $Id$
+# $Id: docutils_xml.py 9239 2022-11-13 16:14:59Z milde $
 # Author: David Goodger, Paul Tremblay, Guenter Milde
 # Maintainer: docutils-develop@lists.sourceforge.net
 # Copyright: This module has been placed in the public domain.
@@ -111,7 +111,7 @@ class XMLTranslator(nodes.GenericNodeVisitor):
     # generic visit and depart methods
     # --------------------------------
 
-    simple_nodes = (nodes.TextElement, nodes.meta,
+    simple_nodes = (nodes.TextElement,
                     nodes.image, nodes.colspec, nodes.transition)
 
     def default_visit(self, node):
@@ -119,10 +119,8 @@ class XMLTranslator(nodes.GenericNodeVisitor):
         if not self.in_simple:
             self.output.append(self.indent*self.level)
         self.output.append(node.starttag(xml.sax.saxutils.quoteattr))
-        if not isinstance(node, nodes.Inline):
-            self.level += 1
-        # `nodes.literal` is not an instance of FixedTextElement by design,
-        # see docs/ref/rst/restructuredtext.html#inline-literals
+        self.level += 1
+        # @@ make nodes.literal an instance of FixedTextElement?
         if isinstance(node, (nodes.FixedTextElement, nodes.literal)):
             self.fixed_text += 1
         if isinstance(node, self.simple_nodes):
@@ -132,8 +130,7 @@ class XMLTranslator(nodes.GenericNodeVisitor):
 
     def default_departure(self, node):
         """Default node depart method."""
-        if not isinstance(node, nodes.Inline):
-            self.level -= 1
+        self.level -= 1
         if not self.in_simple:
             self.output.append(self.indent*self.level)
         self.output.append(node.endtag())

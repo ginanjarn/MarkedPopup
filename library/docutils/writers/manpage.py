@@ -1,4 +1,4 @@
-# $Id$
+# $Id: manpage.py 9206 2022-11-03 10:52:43Z aa-turner $
 # Author: Engelbert Gruber <grubert@users.sourceforge.net>
 # Copyright: This module is put into the public domain.
 
@@ -19,24 +19,24 @@ systems. The pages are grouped in numbered sections:
 
 Man pages are written *troff*, a text file formatting system.
 
-See https://www.tldp.org/HOWTO/Man-Page for a start.
+See http://www.tldp.org/HOWTO/Man-Page for a start.
 
 Man pages have no subsection only parts.
 Standard parts
 
-  Name ,
-  Synopsis ,
-  Description ,
-  Options ,
-  Files ,
-  See also ,
-  Bugs ,
+  NAME ,
+  SYNOPSIS ,
+  DESCRIPTION ,
+  OPTIONS ,
+  FILES ,
+  SEE ALSO ,
+  BUGS ,
 
 and
 
-  AUthor .
+  AUTHOR .
 
-A unix-like system keeps an index of the Descriptions, which is accessible
+A unix-like system keeps an index of the DESCRIPTIONs, which is accessible
 by the command whatis or apropos.
 
 """
@@ -45,12 +45,11 @@ __docformat__ = 'reStructuredText'
 
 import re
 
-import docutils
 from docutils import nodes, writers, languages
 try:
     import roman
 except ImportError:
-    from docutils.utils import roman
+    import docutils.utils.roman as roman
 
 FIELD_LIST_INDENT = 7
 DEFINITION_LIST_INDENT = 7
@@ -60,7 +59,7 @@ LITERAL_BLOCK_INDENT = 3.5
 
 # Define two macros so man/roff can calculate the
 # indent/unindent margins by itself
-MACRO_DEF = r""".
+MACRO_DEF = (r""".
 .nr rst2man-indent-level 0
 .
 .de1 rstReportMargin
@@ -87,18 +86,13 @@ level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .\" new: \\n[rst2man-indent\\n[rst2man-indent-level]]
 .in \\n[rst2man-indent\\n[rst2man-indent-level]]u
 ..
-"""
+""")
 
 
 class Writer(writers.Writer):
-    """
-    manpage writer class
-    """
 
     supported = ('manpage',)
     """Formats this writer supports."""
-
-    # manpage writer specfic settings. not yet
 
     output = None
     """Final translated form of `document`."""
@@ -114,12 +108,9 @@ class Writer(writers.Writer):
 
 
 class Table:
-    """
-    man package table handling. 
-    """
     def __init__(self):
         self._rows = []
-        self._options = ['box', 'center']
+        self._options = ['center']
         self._tab_char = '\t'
         self._coldefs = []
 
@@ -149,9 +140,10 @@ class Table:
     def as_list(self):
         text = ['.TS\n']
         text.append(' '.join(self._options) + ';\n')
-        text.append('%s.\n' % ('|'.join(self._coldefs)))
+        text.append('|%s|.\n' % ('|'.join(self._coldefs)))
         for row in self._rows:
             # row = array of cells. cell = array of lines.
+            text.append('_\n')       # line above
             text.append('T{\n')
             for i in range(len(row)):
                 cell = row[i]
@@ -163,21 +155,17 @@ class Table:
                     text.append('T}'+self._tab_char+'T{\n')
                 else:
                     text.append('T}\n')
-            text.append('_\n')       # line between rows
-        text.pop()     # pop last "line between"
+        text.append('_\n')
         text.append('.TE\n')
         return text
 
 
 class Translator(nodes.NodeVisitor):
-    """
-    Generate unixlike manual pages using the man macro package from a Docutils document tree.
-    """
+    """"""
 
     words_and_spaces = re.compile(r'\S+| +|\n')
     possibly_a_roff_command = re.compile(r'\.\w')
-    document_start = ( 'Man page generated from reStructuredText by manpage writer\n'
-                      f'from docutils {docutils.__version__}.' )
+    document_start = """Man page generated from reStructuredText."""
 
     def __init__(self, document):
         nodes.NodeVisitor.__init__(self, document)
@@ -195,10 +183,10 @@ class Translator(nodes.NodeVisitor):
         self.compact_simple = None
         # the list style "*" bullet or "#" numbered
         self._list_char = []
-        # writing the header .TH and .SH Name is postboned after
+        # writing the header .TH and .SH NAME is postboned after
         # docinfo.
         self._docinfo = {
-                "title": "", 
+                "title": "", "title_upper": "",
                 "subtitle": "",
                 "manual_section": "", "manual_group": "",
                 "author": [],
@@ -211,7 +199,6 @@ class Translator(nodes.NodeVisitor):
         self._in_docinfo = None
         self._field_name = None
         self._active_table = None
-        self._has_a_table = False   # is there a table in this document
         self._in_literal = False
         self.header_written = 0
         self._line_block = 0
@@ -227,22 +214,20 @@ class Translator(nodes.NodeVisitor):
         # ``.ft P`` or ``\\fP`` pop from stack.
         # But ``.BI`` seams to fill stack with BIBIBIBIB...
         # ``B`` bold, ``I`` italic, ``R`` roman should be available.
-        #
-        # Requests start wit a dot ``.`` or the no-break control character,
-        # a neutral apostrophe ``'`` suppresses the break implied by some
-        # requests.
+        # Hopefully ``C`` courier too.
         self.defs = {
                 'indent': ('.INDENT %.1f\n', '.UNINDENT\n'),
                 'definition_list_item': ('.TP', ''),  # par. with hanging tag
                 'field_name': ('.TP\n.B ', '\n'),
                 'literal': ('\\fB', '\\fP'),
-                'literal_block': ('.sp\n.EX\n', '\n.EE\n'),
+                'literal_block': ('.sp\n.nf\n.ft C\n', '\n.ft P\n.fi\n'),
 
                 'option_list_item': ('.TP\n', ''),
 
                 'reference': (r'\fI\%', r'\fP'),
                 'emphasis': ('\\fI', '\\fP'),
                 'strong': ('\\fB', '\\fP'),
+                'term': ('\n.B ', '\n'),
                 'title_reference': ('\\fI', '\\fP'),
 
                 'topic-title': ('.SS ',),
@@ -324,9 +309,9 @@ class Translator(nodes.NodeVisitor):
 
     def list_start(self, node):
         class EnumChar:
-            """list item numbering/markup handling"""
             enum_style = {
                     'bullet': '\\(bu',
+                    'emdash': '\\(em',
                      }
 
             def __init__(self, style):
@@ -353,17 +338,21 @@ class Translator(nodes.NodeVisitor):
             def __next__(self):
                 if self._style == 'bullet':
                     return self.enum_style[self._style]
+                elif self._style == 'emdash':
+                    return self.enum_style[self._style]
                 self._cnt += 1
                 # TODO add prefix postfix
-                if self._style in ('loweralpha', 'upperalpha'):
+                if self._style == 'arabic':
+                    return "%d." % self._cnt
+                elif self._style in ('loweralpha', 'upperalpha'):
                     return "%c." % self._cnt
-                if self._style.endswith('roman'):
+                elif self._style.endswith('roman'):
                     res = roman.toRoman(self._cnt) + '.'
                     if self._style.startswith('upper'):
                         return res.upper()
                     return res.lower()
-                # else 'arabic', ...
-                return "%d." % self._cnt
+                else:
+                    return "%d." % self._cnt
 
             def get_width(self):
                 return self._indent
@@ -374,8 +363,6 @@ class Translator(nodes.NodeVisitor):
         if 'enumtype' in node:
             self._list_char.append(EnumChar(node['enumtype']))
         else:
-            # INFO node['bullet'] contains the bullet style "*+-"
-            # BUT man pages only use "*".
             self._list_char.append(EnumChar('bullet'))
         if len(self._list_char) > 1:
             # indent nested lists
@@ -388,19 +375,19 @@ class Translator(nodes.NodeVisitor):
         self._list_char.pop()
 
     def header(self):
-        th = (".TH \"%(title)s\" \"%(manual_section)s\""
+        th = (".TH \"%(title_upper)s\" %(manual_section)s"
               " \"%(date)s\" \"%(version)s\"") % self._docinfo
         if self._docinfo["manual_group"]:
             th += " \"%(manual_group)s\"" % self._docinfo
         th += "\n"
-        sh_tmpl = (".SH Name\n"
+        sh_tmpl = (".SH NAME\n"
                    "%(title)s \\- %(subtitle)s\n")
         return th + sh_tmpl % self._docinfo
 
     def append_header(self):
-        """append header with .TH and .SH Name"""
+        """append header with .TH and .SH NAME"""
         # NOTE before everything
-        # .TH title section date source manual
+        # .TH title_upper section date source manual
         # BUT macros before .TH for whatis database generators.
         if self.header_written:
             return
@@ -428,7 +415,7 @@ class Translator(nodes.NodeVisitor):
             self.body.append('.sp\n')
             name = '%s%s:%s\n' % (
                 self.defs['strong'][0],
-                self.language.labels.get(name, name),
+                self.language.labels.get(name, name).upper(),
                 self.defs['strong'][1],
                 )
             self.body.append(name)
@@ -505,11 +492,10 @@ class Translator(nodes.NodeVisitor):
         raise nodes.SkipNode
 
     def visit_classifier(self, node):
-        self.body.append('(')
+        pass
 
     def depart_classifier(self, node):
-        self.body.append(')')
-        self.depart_term(node)  # close the term element after last classifier
+        pass
 
     def visit_colspec(self, node):
         self.colspecs.append(node)
@@ -607,12 +593,12 @@ class Translator(nodes.NodeVisitor):
 
     def depart_document(self, node):
         if self._docinfo['author']:
-            self.body.append('.SH Author\n%s\n'
+            self.body.append('.SH AUTHOR\n%s\n'
                              % ', '.join(self._docinfo['author']))
         skip = ('author', 'copyright', 'date',
                 'manual_group', 'manual_section',
                 'subtitle',
-                'title', 'version')
+                'title', 'title_upper', 'version')
         for name in self._docinfo_keys:
             if name == 'address':
                 self.body.append("\n%s:\n%s%s.nf\n%s\n.fi\n%s%s" % (
@@ -629,9 +615,9 @@ class Translator(nodes.NodeVisitor):
                     label = self.language.labels.get(name, name)
                 self.body.append("\n%s: %s\n" % (label, self._docinfo[name]))
         if self._docinfo['copyright']:
-            self.body.append('.SH Copyright\n%s\n'
+            self.body.append('.SH COPYRIGHT\n%s\n'
                              % self._docinfo['copyright'])
-        self.body.append(self.comment_begin('End of generated man page.'))
+        self.body.append(self.comment('Generated by docutils manpage writer.'))
 
     def visit_emphasis(self, node):
         self.body.append(self.defs['emphasis'][0])
@@ -691,7 +677,8 @@ class Translator(nodes.NodeVisitor):
         if self._in_docinfo:
             self._field_name = node.astext()
             raise nodes.SkipNode
-        self.body.append(self.defs['field_name'][0])
+        else:
+            self.body.append(self.defs['field_name'][0])
 
     def depart_field_name(self, node):
         self.body.append(self.defs['field_name'][1])
@@ -707,8 +694,6 @@ class Translator(nodes.NodeVisitor):
     def visit_footer(self, node):
         self.document.reporter.warning('"footer" not supported',
                                        base_node=node)
-        # avoid output the link to document source
-        raise nodes.SkipNode
 
     def depart_footer(self, node):
         pass
@@ -790,8 +775,9 @@ class Translator(nodes.NodeVisitor):
         pass
 
     def visit_label(self, node):
-        # footnote and citation labels are written in their visit_ functions.
-        if isinstance(node.parent, (nodes.footnote, nodes.citation)):
+        # footnote and citation
+        if (isinstance(node.parent, nodes.footnote)
+            or isinstance(node.parent, nodes.citation)):
             raise nodes.SkipNode
         self.document.reporter.warning('"unsupported "label"',
                                        base_node=node)
@@ -1003,30 +989,19 @@ class Translator(nodes.NodeVisitor):
         self.body.append(self.defs['problematic'][1])
 
     def visit_raw(self, node):
-        if 'manpage' in node.get('format', '').split():
+        if node.get('format') == 'manpage':
             self.body.append(node.astext() + "\n")
         # Keep non-manpage raw text out of output:
         raise nodes.SkipNode
 
     def visit_reference(self, node):
         """E.g. link or email address."""
-        # For .UR/.UE and .MT/.ME macros groff might use OSC8 escape sequences
-        # which are not supported everywhere yet
-        # therefore make the markup ourself
-        if 'refuri' in node:
-            # if content has the "email" do not output "mailto:email"
-            if node['refuri'].endswith(node.astext()):
-                self.body.append(" <")
-        #TODO elif 'refid' in node:
+        self.body.append(self.defs['reference'][0])
 
     def depart_reference(self, node):
-        if 'refuri' in node:
-            # if content has the "email" do not output "mailto:email"
-            if node['refuri'].endswith(node.astext()):
-                self.body.append("> ")
-            else:
-                self.body.append(" <%s>\n" % node['refuri'])
-        #TODO elif 'refid' in node:
+        # TODO check node text is different from refuri
+        # self.body.append("\n'UR " + node['refuri'] + "\n'UE\n")
+        self.body.append(self.defs['reference'][1])
 
     def visit_revision(self, node):
         self.visit_docinfo_item(node, 'revision')
@@ -1096,10 +1071,6 @@ class Translator(nodes.NodeVisitor):
 
     def visit_table(self, node):
         self._active_table = Table()
-        if not self._has_a_table:
-            self._has_a_table = True
-            # the comment to hint that preprocessor tbl should be called
-            self.head.insert(0, "'\\\" t\n")  # ``'\" t`` + newline
 
     def depart_table(self, node):
         self.ensure_eol()
@@ -1117,19 +1088,10 @@ class Translator(nodes.NodeVisitor):
         pass
 
     def visit_term(self, node):
-        self.body.append('\n.B ')
+        self.body.append(self.defs['term'][0])
 
     def depart_term(self, node):
-        _next = node.next_node(None, descend=False, siblings=True)
-        # Nest (optional) classifier(s) in the <term> element
-        if isinstance(_next, nodes.classifier):
-            self.body.append(' ')
-            return  # skip (depart_classifier() calls this function again)
-        if isinstance(_next, nodes.term):
-            # .TQ  Additional paragraph tag
-            self.body.append('\n.TQ')
-        else:
-            self.body.append('\n')
+        self.body.append(self.defs['term'][1])
 
     def visit_tgroup(self, node):
         pass
@@ -1159,9 +1121,11 @@ class Translator(nodes.NodeVisitor):
             self.body.append('.IP "')
         elif self.section_level == 0:
             self._docinfo['title'] = node.astext()
+            # document title for .TH
+            self._docinfo['title_upper'] = node.astext().upper()
             raise nodes.SkipNode
         elif self.section_level == 1:
-            self.body.append('.SH %s\n'%self.deunicode(node.astext()))
+            self.body.append('.SH %s\n'%self.deunicode(node.astext().upper()))
             raise nodes.SkipNode
         else:
             self.body.append('.SS ')

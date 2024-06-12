@@ -1,4 +1,4 @@
-# $Id$
+# $Id: ja.py 9030 2022-03-05 23:28:32Z milde $
 # Author: Hisashi Morita <hisashim@kt.rim.or.jp>
 # Copyright: This module has been placed in the public domain.
 

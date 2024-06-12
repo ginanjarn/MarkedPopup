@@ -1,4 +1,4 @@
-# :Id: $Id$
+# :Id: $Id: punctuation_chars.py 9270 2022-11-24 20:28:03Z milde $
 # :Copyright: © 2011, 2017 Günter Milde.
 # :License: Released under the terms of the `2-Clause BSD license`_, in short:
 #

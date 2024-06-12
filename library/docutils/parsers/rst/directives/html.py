@@ -1,4 +1,4 @@
-# $Id$
+# $Id: html.py 9062 2022-05-30 21:09:09Z milde $
 # Author: David Goodger <goodger@python.org>
 # Copyright: This module has been placed in the public domain.
 

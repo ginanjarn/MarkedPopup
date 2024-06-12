@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # :Author: Günter Milde <milde@users.sf.net>
-# :Revision: $Revision$
-# :Date: $Date$
+# :Revision: $Revision: 9293 $
+# :Date: $Date: 2022-12-01 22:13:54 +0100 (Do, 01. Dez 2022) $
 # :Copyright: © 2010 Günter Milde.
 # :License: Released under the terms of the `2-Clause BSD license`_, in short:
 #

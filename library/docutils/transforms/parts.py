@@ -1,4 +1,4 @@
-# $Id$
+# $Id: parts.py 9038 2022-03-05 23:31:46Z milde $
 # Authors: David Goodger <goodger@python.org>; Ueli Schlaepfer; Dmitry Jemerov
 # Copyright: This module has been placed in the public domain.
 
@@ -87,9 +87,6 @@ class Contents(Transform):
     def apply(self):
         # let the writer (or output software) build the contents list?
         toc_by_writer = getattr(self.document.settings, 'use_latex_toc', False)
-        # TODO: handle "generate_oowriter_toc" setting of the "ODT" writer.
-        if toc_by_writer:
-            return
         details = self.startnode.details
         if 'local' in details:
             startnode = self.startnode.parent.parent
@@ -104,11 +101,16 @@ class Contents(Transform):
             self.backlinks = details['backlinks']
         else:
             self.backlinks = self.document.settings.toc_backlinks
-        contents = self.build_contents(startnode)
-        if len(contents):
-            self.startnode.replace_self(contents)
+        if toc_by_writer:
+            # move customization settings to the parent node
+            self.startnode.parent.attributes.update(details)
+            self.startnode.parent.remove(self.startnode)
         else:
-            self.startnode.parent.parent.remove(self.startnode.parent)
+            contents = self.build_contents(startnode)
+            if len(contents):
+                self.startnode.replace_self(contents)
+            else:
+                self.startnode.parent.parent.remove(self.startnode.parent)
 
     def build_contents(self, node, level=0):
         level += 1

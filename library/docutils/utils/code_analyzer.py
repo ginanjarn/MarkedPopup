@@ -1,5 +1,5 @@
 # :Author: Georg Brandl; Lea Wiemann; Günter Milde
-# :Date: $Date$
+# :Date: $Date: 2022-11-16 15:01:31 +0100 (Mi, 16. Nov 2022) $
 # :Copyright: This module has been placed in the public domain.
 
 """Lexical analysis of formal languages (i.e. code) using Pygments."""

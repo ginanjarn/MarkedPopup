@@ -1,4 +1,4 @@
-# $Id$
+# $Id: uk.py 9114 2022-07-28 17:06:10Z milde $
 # Author: Dmytro Kazanzhy <dkazanzhy@gmail.com>
 # Copyright: This module has been placed in the public domain.
 

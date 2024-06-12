@@ -1,4 +1,4 @@
-# $Id$
+# $Id: __init__.py 9258 2022-11-21 14:51:43Z milde $
 # Authors: David Goodger <goodger@python.org>; Ueli Schlaepfer
 # Copyright: This module has been placed in the public domain.
 

@@ -1,4 +1,4 @@
-# $Id$
+# $Id: null.py 9352 2023-04-17 20:26:41Z milde $
 # Author: David Goodger <goodger@python.org>
 # Copyright: This module has been placed in the public domain.
 

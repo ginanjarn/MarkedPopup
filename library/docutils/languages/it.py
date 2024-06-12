@@ -1,4 +1,4 @@
-# $Id$
+# $Id: it.py 9030 2022-03-05 23:28:32Z milde $
 # Author: Nicola Larosa <docutils@tekNico.net>
 # Copyright: This module has been placed in the public domain.
 

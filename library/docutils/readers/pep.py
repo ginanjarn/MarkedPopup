@@ -1,4 +1,4 @@
-# $Id$
+# $Id: pep.py 9258 2022-11-21 14:51:43Z milde $
 # Author: David Goodger <goodger@python.org>
 # Copyright: This module has been placed in the public domain.
 

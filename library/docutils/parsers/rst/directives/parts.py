@@ -1,4 +1,4 @@
-# $Id$
+# $Id: parts.py 8993 2022-01-29 13:20:04Z milde $
 # Authors: David Goodger <goodger@python.org>; Dmitry Jemerov
 # Copyright: This module has been placed in the public domain.
 

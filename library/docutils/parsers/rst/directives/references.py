@@ -1,4 +1,4 @@
-# $Id$
+# $Id: references.py 7062 2011-06-30 22:14:29Z milde $
 # Authors: David Goodger <goodger@python.org>; Dmitry Jemerov
 # Copyright: This module has been placed in the public domain.
 

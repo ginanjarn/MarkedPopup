@@ -9,8 +9,8 @@
 #
 # .. _2-Clause BSD license: https://opensource.org/licenses/BSD-2-Clause
 #
-# Revision: $Revision$
-# Date: $Date$
+# Revision: $Revision: 9048 $
+# Date: $Date: 2022-03-29 23:50:15 +0200 (Di, 29. Mär 2022) $
 """
 An interface for parsing CommonMark input.
 
@@ -18,8 +18,8 @@ Select a locally installed parser from the following 3rd-party
 parser packages:
 
 :pycmark:       https://pypi.org/project/pycmark/
-:myst:          https://pypi.org/project/myst-docutils/
-:recommonmark:  https://pypi.org/project/recommonmark/ (deprecated)
+:myst:          https://pypi.org/project/pycmark/
+:recommonmark:  https://pypi.org/project/pycmark/ (unmaintained, deprecated)
 
 The first parser class that can be successfully imported is mapped to
 `commonmark_wrapper.Parser`.

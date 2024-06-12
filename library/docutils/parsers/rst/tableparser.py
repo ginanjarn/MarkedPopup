@@ -1,4 +1,4 @@
-# $Id$
+# $Id: tableparser.py 9038 2022-03-05 23:31:46Z milde $
 # Author: David Goodger <goodger@python.org>
 # Copyright: This module has been placed in the public domain.
 

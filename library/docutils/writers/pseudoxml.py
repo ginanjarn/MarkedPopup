@@ -1,4 +1,4 @@
-# $Id$
+# $Id: pseudoxml.py 9043 2022-03-11 12:09:16Z milde $
 # Author: David Goodger <goodger@python.org>
 # Copyright: This module has been placed in the public domain.
 

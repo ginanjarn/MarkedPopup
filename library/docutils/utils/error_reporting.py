@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# :Id: $Id$
+# :Id: $Id: error_reporting.py 9078 2022-06-17 11:31:40Z milde $
 # :Copyright: © 2011 Günter Milde.
 # :License: Released under the terms of the `2-Clause BSD license`_, in short:
 #

@@ -1,4 +1,4 @@
-# $Id$
+# $Id: zh_cn.py 9030 2022-03-05 23:28:32Z milde $
 # Author: Panjunyong <panjy@zopechina.com>
 # Copyright: This module has been placed in the public domain.
 

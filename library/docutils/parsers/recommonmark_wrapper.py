@@ -9,17 +9,17 @@
 #
 # .. _2-Clause BSD license: https://opensource.org/licenses/BSD-2-Clause
 #
-# Revision: $Revision$
-# Date: $Date$
+# Revision: $Revision: 9302 $
+# Date: $Date: 2022-12-02 18:14:05 +0100 (Fr, 02. Dez 2022) $
 """
 A parser for CommonMark Markdown text using `recommonmark`__.
 
 __ https://pypi.org/project/recommonmark/
 
-.. important:: This module is deprecated.
+.. important:: This module is provisional
 
    * The "recommonmark" package is unmaintained and deprecated.
-     This wrapper module will be removed in Docutils 1.0.
+     This wrapper module will be removed in a future Docutils version.
 
    * The API is not settled and may change with any minor Docutils version.
 """
@@ -75,9 +75,7 @@ class Parser(CommonMarkParser):
         return Component.get_transforms(self)  # + [AutoStructify]
 
     def parse(self, inputstring, document):
-        """Wrapper of upstream method.
-
-        Ensure "line-length-limt". Report errors with `document.reporter`.
+        """Use the upstream parser and clean up afterwards.
         """
         # check for exorbitantly long lines
         for i, line in enumerate(inputstring.split('\n')):
@@ -97,13 +95,8 @@ class Parser(CommonMarkParser):
                                             'returned the error:\n%s'%err)
             document.append(error)
 
-    # Post-Processing
-    # ---------------
-
-    def finish_parse(self):
-        """Finalize parse details.  Call at end of `self.parse()`."""
-
-        document = self.document
+        # Post-Processing
+        # ---------------
 
         # merge adjoining Text nodes:
         for node in document.findall(nodes.TextElement):
@@ -116,11 +109,6 @@ class Parser(CommonMarkParser):
                     children[i].parent = node
                 else:
                     i += 1
-
-        # remove empty Text nodes:
-        for node in document.findall(nodes.Text):
-            if not len(node):
-                node.parent.remove(node)
 
         # add "code" class argument to literal elements (inline and block)
         for node in document.findall(is_literal):
@@ -135,17 +123,8 @@ class Parser(CommonMarkParser):
         # replace raw nodes if raw is not allowed
         if not document.settings.raw_enabled:
             for node in document.findall(nodes.raw):
-                message = document.reporter.warning('Raw content disabled.')
-                if isinstance(node.parent, nodes.TextElement):
-                    msgid = document.set_id(message)
-                    problematic = nodes.problematic('', node.astext(),
-                                                    refid=msgid)
-                    node.parent.replace(node, problematic)
-                    prbid = document.set_id(problematic)
-                    message.add_backref(prbid)
-                    document.append(message)
-                else:
-                    node.parent.replace(node, message)
+                warning = document.reporter.warning('Raw content disabled.')
+                node.parent.replace(node, warning)
 
         # drop pending_xref (Sphinx cross reference extension)
         for node in document.findall(addnodes.pending_xref):
@@ -154,8 +133,6 @@ class Parser(CommonMarkParser):
                 reference['name'] = nodes.fully_normalize_name(
                                                     reference.astext())
             node.parent.replace(node, reference)
-        # now we are ready to call the upstream function:
-        super().finish_parse()
 
     def visit_document(self, node):
         """Dummy function to prevent spurious warnings.

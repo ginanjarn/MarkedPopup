@@ -1,4 +1,4 @@
-# $Id$
+# $Id: __init__.py 9048 2022-03-29 21:50:15Z milde $
 # Author: David Goodger <goodger@python.org>
 # Copyright: This module has been placed in the public domain.
 
@@ -10,7 +10,7 @@ __docformat__ = 'reStructuredText'
 
 from importlib import import_module
 
-from docutils import Component, frontend, transforms
+from docutils import Component, frontend
 
 
 class Parser(Component):
@@ -39,20 +39,10 @@ class Parser(Component):
           ['--line-length-limit'],
           {'metavar': '<length>', 'type': 'int', 'default': 10000,
            'validator': frontend.validate_nonnegative_int}),
-         ('Validate the document tree after parsing.',
-          ['--validate'],
-          {'action': 'store_true',
-           'validator': frontend.validate_boolean}),
-         ('Do not validate the document tree. (default)',
-          ['--no-validation'],
-          {'action': 'store_false', 'dest': 'validate'}),
          )
         )
     component_type = 'parser'
     config_section = 'parsers'
-
-    def get_transforms(self):
-        return super().get_transforms() + [transforms.universal.Validate]
 
     def parse(self, inputstring, document):
         """Override to parse `inputstring` into document tree `document`."""
@@ -82,9 +72,6 @@ _parser_aliases = {  # short names for known parsers
                    'rest': 'docutils.parsers.rst',
                    'restx': 'docutils.parsers.rst',
                    'rtxt': 'docutils.parsers.rst',
-                   # Docutils XML
-                   'docutils_xml': 'docutils.parsers.docutils_xml',
-                   'xml': 'docutils.parsers.docutils_xml',
                    # 3rd-party Markdown parsers
                    'recommonmark': 'docutils.parsers.recommonmark_wrapper',
                    'myst': 'myst_parser.docutils_',

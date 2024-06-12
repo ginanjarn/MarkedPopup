@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# $Id$
+# $Id: prepstyles.py 9386 2023-05-16 14:49:31Z milde $
 # Author: Dave Kuhlman <dkuhlman@rexx.com>
 # Copyright: This module has been placed in the public domain.
 
