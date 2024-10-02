@@ -12,65 +12,76 @@ from . import converter
 
 class MarkupKind(Enum):
     PLAIN = "plain"
-    MARKDOWN = "md"
-    RE_STRUCTURED_TEXT = "rst"
+    MARKDOWN = "markdown"
+    RE_STRUCTURED_TEXT = "reStructuredText"
 
 
 RowCol = Tuple[int, int]
 
-RENDERER = {
+_RENDERER = {
     MarkupKind.PLAIN: lambda x: x,
     MarkupKind.MARKDOWN: converter.convert_markdown,
     MarkupKind.RE_STRUCTURED_TEXT: converter.convert_rst,
 }
 
 
-def adapt_minihtml(text: str) -> str:
-    """adapt regular html to minihtml"""
+def render(text: str, kind: MarkupKind) -> str:
+    """render text with selected kind"""
+    return _RENDERER[kind](text)
+
+
+def _adapt_pre_spaces(pre_text: str) -> str:
+    # minihtml ignore '\n', convert to '<br>\n'
+    newline_text = pre_text.replace("\n", "<br>\n")
+    # minihtml ignore space, convert to '&nbsp;'
+    space_escaped_text = newline_text.replace("  ", "&nbsp;&nbsp;")
+    return space_escaped_text
+
+
+def adapt_minihtml(html_text: str) -> str:
+    """adapt html to Sublime minihtml implementation"""
 
     offset = 0
     temp = []
 
-    def normalize_space(text: str) -> str:
-        # minihtml ignore '\n', force use '<br>\n'
-        text = text.replace("\n", "<br>\n")
-        # minihtml ignore space, force use '&nbsp;'
-        text = text.replace("  ", "&nbsp;&nbsp;")
-        return text
-
-    while offset < len(text):
+    while offset < len(html_text):
         op_text = "<pre"
         ed_text = "</pre>"
 
-        op_index = text[offset:].find(op_text)
+        op_index = html_text[offset:].find(op_text)
         if op_index < 0:
             break
 
-        ed_index = text[offset:].find(ed_text)
+        ed_index = html_text[offset:].find(ed_text)
         if ed_index < 0:
             break
 
         start = op_index + offset
         end = ed_index + offset
 
-        prefix = text[offset:start]
-        pre_body = text[start:end]
-        temp.extend([prefix, normalize_space(pre_body), ed_text])
+        prefix = html_text[offset:start]
+        pre_body = html_text[start:end]
+        temp.extend([prefix, _adapt_pre_spaces(pre_body), ed_text])
         offset = offset + end + len(ed_text)
 
     # else
-    excess = text[offset:]
+    excess = html_text[offset:]
     temp.append(excess)
 
     return "".join(temp)
 
 
-css_style = Path(__file__).parent.joinpath("static", "style.css").read_text()
+css_style = Path(__file__).parent.joinpath("static/style.css").read_text()
 
 
-def add_style(html_text: str) -> str:
+def wrap_html_body(html_text: str) -> str:
     """add style"""
-    return f"<body>\n<style>\n{css_style}\n</style>\n{html_text}\n</body>"
+    return (
+        '<body id="marked-popup">\n'
+        f"<style>\n{css_style}\n</style>\n"
+        f"{html_text}\n"
+        "</body>"
+    )
 
 
 class MarkedPopup(sublime_plugin.TextCommand):
@@ -79,27 +90,24 @@ class MarkedPopup(sublime_plugin.TextCommand):
         edit: sublime.Edit,
         location: Union[int, RowCol],
         text: str,
-        markup: str = "PLAIN",
+        markup: str = "plain",
     ):
+        if not text:
+            return
+
         if isinstance(location, list):
             location = self.view.text_point(location[0], location[1])
 
         try:
-            kind = MarkupKind[markup.upper()]
-
-        except KeyError:
-            print(f"kind must in {[k.name for k in MarkupKind]}")
+            kind = MarkupKind(markup)
+        except ValueError:
+            print(f"kind must in {[k.value for k in MarkupKind]}")
             return
 
-        text = RENDERER[kind](text)
-        if not text:
-            return
-
-        text = adapt_minihtml(text)
-        text = add_style(text)
-
+        rendered_text = render(text, kind)
+        html_text = wrap_html_body(adapt_minihtml(rendered_text))
         self.view.show_popup(
-            text,
+            html_text,
             location=location,
             max_width=1024,
             flags=sublime.HIDE_ON_MOUSE_MOVE_AWAY
