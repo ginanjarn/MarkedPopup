@@ -3,36 +3,43 @@ body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
     line-height: 1.5;
 }
+h1, h2, h3, h4, h5, h6 {
+    margin: 0.5em 0 0.5em 0;
+}
 p, pre, blockquote {
     margin: 0.5em 0 0 0;
 }
 pre, code {
     font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
-}
-/* code property inside pre block */
-pre code {
     color: var(--accent);
-    background-color: inherit;
-    display: inherit;
-    padding: inherit;
-    border-radius: inherit;
-    border-style: inherit;
+    background-color: color(var(--background) alpha(0.8));
 }
 code {
-    background-color: color(var(--background) alpha(0.5));
     display: inline;
     padding: 0, 0.3em, 0, 0.3em;
     border-radius: 0.3em;
     border-style: solid;
 }
 pre, blockquote {
-    background-color: color(var(--background) alpha(0.7));
     display: block;
     padding : 0.3em;
     border-radius: 0.3em;
     border-style: solid;
 }
+/* code inside pre element */
+pre code {
+    display: inherit;
+    padding: 0;
+    border-radius: 0;
+    border-style: none;
+    background-color: transparent;
+}
 ul, ol {
     margin: 0 1em;
     padding: 0;
+}
+.hr {
+    margin: 0.5em 0 0.5em 0;
+    display: block;
+    background-color: color(var(--foreground) alpha(0.3));
 }
