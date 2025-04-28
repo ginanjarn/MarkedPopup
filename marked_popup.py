@@ -44,7 +44,7 @@ def wrap_html_body(html_text: str) -> str:
     )
 
 
-class MarkedPopup(sublime_plugin.TextCommand):
+class MarkedPopupCommand(sublime_plugin.TextCommand):
     def run(
         self,
         edit: sublime.Edit,
@@ -53,28 +53,32 @@ class MarkedPopup(sublime_plugin.TextCommand):
         markup: str = "plain",
         keep_visible: bool = False,
     ):
-        if not text:
-            return
+
+        text = self.render_markup(text, markup)
 
         if isinstance(location, list):
-            location = self.view.text_point(location[0], location[1])
-
-        try:
-            kind = MarkupKind(markup)
-        except ValueError:
-            print(f"kind must in {[k.value for k in MarkupKind]}")
-            return
-
-        rendered_text = render(text, kind)
-        html_text = wrap_html_body(html_to_minihtml(rendered_text))
+            location = self.view.text_point(*location)
 
         flags = sublime.HIDE_ON_MOUSE_MOVE_AWAY | sublime.COOPERATE_WITH_AUTO_COMPLETE
         if keep_visible:
             flags |= sublime.KEEP_ON_SELECTION_MODIFIED
 
         self.view.show_popup(
-            html_text,
+            text,
             location=location,
             max_width=1024,
             flags=flags,
         )
+
+    def render_markup(self, text: str, markup: str) -> str:
+        if not text:
+            return ""
+
+        try:
+            kind = MarkupKind(markup)
+        except ValueError as err:
+            message = f"markup must one of {[k.value for k in MarkupKind]}"
+            raise ValueError(message) from err
+
+        rendered_text = render(text, kind)
+        return wrap_html_body(html_to_minihtml(rendered_text))
