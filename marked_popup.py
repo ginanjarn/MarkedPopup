@@ -51,6 +51,7 @@ class MarkedPopup(sublime_plugin.TextCommand):
         location: Union[int, RowCol],
         text: str,
         markup: str = "plain",
+        keep_visible: bool = False,
     ):
         if not text:
             return
@@ -66,10 +67,14 @@ class MarkedPopup(sublime_plugin.TextCommand):
 
         rendered_text = render(text, kind)
         html_text = wrap_html_body(html_to_minihtml(rendered_text))
+
+        flags = sublime.HIDE_ON_MOUSE_MOVE_AWAY | sublime.COOPERATE_WITH_AUTO_COMPLETE
+        if keep_visible:
+            flags |= sublime.KEEP_ON_SELECTION_MODIFIED
+
         self.view.show_popup(
             html_text,
             location=location,
             max_width=1024,
-            flags=sublime.HIDE_ON_MOUSE_MOVE_AWAY
-            | sublime.COOPERATE_WITH_AUTO_COMPLETE,
+            flags=flags,
         )
