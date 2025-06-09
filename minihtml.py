@@ -14,8 +14,7 @@ in `https://www.sublimetext.com/docs/minihtml.html`.
 
 
 def _newline_to_br(text: str) -> str:
-    lines = text.splitlines(keepends=True)
-    return "<br>".join(lines)
+    return text.replace("\n","<br>\n")
 
 
 def _space_to_nbsp(text: str) -> str:
