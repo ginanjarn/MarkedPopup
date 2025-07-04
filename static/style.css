@@ -1,14 +1,17 @@
+/*
+To make uniform margin, Left and Right margin is controlled by body,
+Top and Bottom margin controlled by inner element.
+*/
 body {
-    margin: 0.5em;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+    margin: 0 0.5rem 0 0.5rem;
     line-height: 1.5;
-    font-size: 14pt;
 }
 h1, h2, h3, h4, h5, h6 {
-    margin: 0.5em 0 0.5em 0;
+    margin: 0.3rem 0 0.3rem 0;
 }
 p, pre, blockquote {
-    margin: 0.5em 0 0 0;
+    margin: 0.3rem 0 0.3rem 0;
 }
 pre, code {
     font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
@@ -16,31 +19,30 @@ pre, code {
 }
 code {
     display: inline;
-    padding: 0, 0.3em, 0, 0.3em;
-    border-radius: 0.3em;
-    border-style: solid;
+    padding: 0, 0.3rem, 0, 0.3rem;
+    border-radius: 0.3rem;
     color: var(--accent);
 }
 pre, blockquote {
     display: block;
-    padding : 0.3em;
-    border-radius: 0.3em;
-    border-style: solid;
+    padding : 0.3rem;
+    border-radius: 0.3rem;
 }
-/* code inside pre element */
+/* keep style unchanged for code inside pre element */
 pre code {
     display: inherit;
+    margin: 0;
     padding: 0;
     border-radius: 0;
-    border-style: none;
     background-color: transparent;
 }
 ul, ol {
-    margin: 0 1em;
+    margin: 0 1rem;
     padding: 0;
 }
+/* <hr> is not implemented in minihtm. make similar element with <div> */
 .hr {
-    margin: 0.5em 0 0.5em 0;
+    margin: 0.3rem 0 0.3rem 0;
     display: block;
     background-color: color(var(--foreground) alpha(0.3));
 }
