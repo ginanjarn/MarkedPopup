@@ -8,7 +8,7 @@ import sublime
 import sublime_plugin
 
 from .minihtml import html_to_minihtml
-from . import converter
+from .renderer import render_markdown, render_rst
 
 
 class MarkupKind(Enum):
@@ -19,16 +19,16 @@ class MarkupKind(Enum):
 
 RowCol = Tuple[int, int]
 
-_RENDERER = {
+_RENDERER_MAP = {
     MarkupKind.PLAIN: lambda x: x,
-    MarkupKind.MARKDOWN: converter.convert_markdown,
-    MarkupKind.RE_STRUCTURED_TEXT: converter.convert_rst,
+    MarkupKind.MARKDOWN: render_markdown,
+    MarkupKind.RE_STRUCTURED_TEXT: render_rst,
 }
 
 
 def render(text: str, kind: MarkupKind) -> str:
     """render text with selected kind"""
-    return _RENDERER[kind](text)
+    return _RENDERER_MAP[kind](text)
 
 
 css_style = Path(__file__).parent.joinpath("static/style.css").read_text()
