@@ -14,7 +14,7 @@ in `https://www.sublimetext.com/docs/minihtml.html`.
 
 
 def _newline_to_br(text: str) -> str:
-    return text.replace("\n","<br>\n")
+    return text.replace("\n", "<br>\n")
 
 
 def _space_to_nbsp(text: str) -> str:
@@ -26,7 +26,7 @@ class MiniHTMLElementParser(HTMLParser):
         super().__init__(convert_charrefs=False)
 
         self.elements: List[str] = []
-        self._enter_pre_tag = False
+        self._pre_tag_level = 0
 
     def handle_startendtag(self, tag, attrs):
         """Similar to handle_starttag(), but called when the parser encounters an
@@ -54,14 +54,15 @@ class MiniHTMLElementParser(HTMLParser):
         For instance, for the tag <A HREF="https://www.cwi.nl/">, this method would
         be called as handle_starttag('a', [('href', 'https://www.cwi.nl/')]).
 
-        All entity references from html.entities are replaced in the attribute values."""
+        All entity references from html.entities are replaced in the attribute values.
+        """
 
         tag_elements = [tag] + [f'{k}="{escape(v)}"' for k, v in attrs]
         self.elements.append(f"<{' '.join(tag_elements)}>")
 
         if tag == "pre":
             # enter pre tag
-            self._enter_pre_tag = True
+            self._pre_tag_level += 1
 
     def handle_endtag(self, tag):
         """This method is called to handle the end tag of an element (e.g. </div>).
@@ -72,7 +73,7 @@ class MiniHTMLElementParser(HTMLParser):
 
         if tag == "pre":
             # exit pre tag
-            self._enter_pre_tag = False
+            self._pre_tag_level -= 1
 
     def handle_charref(self, name):
         """This method is called to process decimal and hexadecimal numeric character
@@ -94,7 +95,7 @@ class MiniHTMLElementParser(HTMLParser):
         """This method is called to process arbitrary data (e.g. text nodes and
         the content of <script>...</script> and <style>...</style>)."""
 
-        if self._enter_pre_tag:
+        if self._pre_tag_level:
             # adapt minihtml behavior for <pre> content
             data = _newline_to_br(_space_to_nbsp(data))
 
