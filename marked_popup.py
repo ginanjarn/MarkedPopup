@@ -12,7 +12,7 @@ from .renderer import render_markdown, render_rst
 
 
 class MarkupKind(Enum):
-    PLAIN = "plain"
+    PLAINTEXT = "plaintext"
     MARKDOWN = "markdown"
     RE_STRUCTURED_TEXT = "reStructuredText"
 
@@ -20,7 +20,7 @@ class MarkupKind(Enum):
 RowCol = Tuple[int, int]
 
 _RENDERER_MAP = {
-    MarkupKind.PLAIN: lambda x: x,
+    MarkupKind.PLAINTEXT: lambda x: x,
     MarkupKind.MARKDOWN: render_markdown,
     MarkupKind.RE_STRUCTURED_TEXT: render_rst,
 }
@@ -50,7 +50,7 @@ class MarkedPopupCommand(sublime_plugin.TextCommand):
         edit: sublime.Edit,
         location: Union[int, RowCol],
         text: str,
-        markup: str = "plain",
+        markup: str = "plaintext",
         keep_visible: bool = False,
     ):
 
