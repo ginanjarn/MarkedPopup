@@ -8,7 +8,7 @@ import sublime
 import sublime_plugin
 
 from .minihtml import html_to_minihtml
-from .renderer import render_markdown, render_rst
+from .renderer import render_plaintext, render_markdown, render_rst
 
 
 class MarkupKind(Enum):
@@ -20,7 +20,7 @@ class MarkupKind(Enum):
 RowCol = Tuple[int, int]
 
 _RENDERER_MAP = {
-    MarkupKind.PLAINTEXT: lambda x: x,
+    MarkupKind.PLAINTEXT: render_plaintext,
     MarkupKind.MARKDOWN: render_markdown,
     MarkupKind.RE_STRUCTURED_TEXT: render_rst,
 }

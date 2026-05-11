@@ -1,12 +1,18 @@
 """renderer"""
 
 import sys
+from html import escape
 from pathlib import Path
 
 # Make library available to 'sys.path'
 LIBRARY_PATH = str(Path(__file__).parent.joinpath("library"))
 if LIBRARY_PATH not in sys.path:
     sys.path.append(LIBRARY_PATH)
+
+
+def render_plaintext(text: str) -> str:
+    """render plain text"""
+    return f"<pre>{escape(text)}</pre>"
 
 
 def render_markdown(text: str) -> str:
