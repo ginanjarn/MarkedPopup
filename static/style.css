@@ -15,13 +15,13 @@ p, pre, blockquote {
 }
 pre, code {
     font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
-    background-color: color(var(--background) alpha(0.8));
 }
 code {
     display: inline;
     padding: 0, 0.3rem, 0, 0.3rem;
     border-radius: 0.3rem;
     color: var(--accent);
+    background-color: color(var(--background) alpha(0.8));
 }
 pre, blockquote {
     display: block;
@@ -32,9 +32,9 @@ pre, blockquote {
 pre code {
     display: inherit;
     margin: 0;
-    padding: 0;
+    padding: inherit;
     border-radius: 0;
-    background-color: transparent;
+    background-color: color(var(--background) alpha(0.8));
 }
 ul, ol {
     margin: 0 1rem;
