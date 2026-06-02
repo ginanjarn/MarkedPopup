@@ -1,5 +1,6 @@
 """Display Sublime Text Popup with marked input"""
 
+import re
 from enum import Enum
 from pathlib import Path
 from typing import Union, Tuple
@@ -31,7 +32,12 @@ def render(text: str, kind: MarkupKind) -> str:
     return _RENDERER_MAP[kind](text)
 
 
-css_style = Path(__file__).parent.joinpath("static/style.css").read_text()
+css_style = re.sub(
+    r"\s+",
+    " ",
+    Path(__file__).parent.joinpath("static/style.css").read_text(),
+    flags=re.MULTILINE,
+)
 
 
 def wrap_html_body(html_text: str) -> str:
